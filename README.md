@@ -48,16 +48,7 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 
 ---
 
-### Running the Project
-1. Clone the repository and navigate to the project directory.
-2. Install required packages using `pip install -r requirements.txt`.
-3. Execute the project script for each problem using the following commands:
-   - **Traveling Salesman Problem**: `python tsp_solver.py`
-   - **Knapsack Problem**: `python knapsack_solver.py`
-   - **Graph Coloring Problem**: `python graph_coloring_solver.py`
 
-### Contributing
-This project includes a variety of algorithmic improvements, and additional features are welcome. Please open an issue or submit a pull request for contributions.
 
 
 
