@@ -1,13 +1,18 @@
 import math
 import random
 import tkinter as tk
-from tkinter import *
 
-num_cities = 25
-num_roads = 100
+# Parameters
+num_cities = 50
 city_scale = 5
-road_width = 4
+road_width = 3
 padding = 100
+cooling_rate = 0.995
+initial_temp = 1000
+best_edge_color = "blue"
+excluded_edge_color = "grey"
+node_color = "black"
+start_node_color = "red"
 
 
 class Node:
@@ -15,120 +20,134 @@ class Node:
         self.x = x
         self.y = y
 
-    def draw(self, canvas, color='black'):
-        canvas.create_oval(self.x-city_scale, self.y-city_scale, self.x+city_scale, self.y+city_scale, fill=color)
+    def draw(self, canvas, color=node_color):
+        canvas.create_oval(self.x - city_scale, self.y - city_scale,
+                           self.x + city_scale, self.y + city_scale, fill=color)
 
 
-class Edge:
-    def __init__(self, a, b):
-        self.city_a = a
-        self.city_b = b
-        self.length = math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+class TravelingSalesman:
+    def __init__(self, nodes):
+        self.nodes = nodes
+        self.best_path = list(range(len(nodes)))
+        self.best_distance = self.calculate_total_distance(self.best_path)
 
-    def draw(self, canvas, color='grey', style=(2, 4)):
-        canvas.create_line(self.city_a.x,
-                           self.city_a.y,
-                           self.city_b.x,
-                           self.city_b.y,
-                           fill=color,
-                           width=road_width,
-                           dash=style)
+    def calculate_total_distance(self, path):
+        # Total distance including returning to the starting city
+        return sum(math.sqrt((self.nodes[path[i]].x - self.nodes[path[i - 1]].x) ** 2 +
+                             (self.nodes[path[i]].y - self.nodes[path[i - 1]].y) ** 2)
+                   for i in range(len(path))) + math.sqrt((self.nodes[path[-1]].x - self.nodes[path[0]].x) ** 2 +
+                                                          (self.nodes[path[-1]].y - self.nodes[path[0]].y) ** 2)
+
+    def two_opt(self, path):
+        best = path[:]
+        improved = True
+        while improved:
+            improved = False
+            for i in range(1, len(best) - 2):
+                for j in range(i + 1, len(best)):
+                    if j - i == 1: continue
+                    new_path = best[:]
+                    new_path[i:j] = best[j - 1:i - 1:-1]
+                    new_distance = self.calculate_total_distance(new_path)
+                    if new_distance < self.calculate_total_distance(best):
+                        best = new_path
+                        improved = True
+            path = best
+        return path
+
+    def simulated_annealing(self):
+        current_path = self.best_path[:]
+        current_distance = self.best_distance
+        temperature = initial_temp
+
+        while temperature > 1:
+            new_path = current_path[:]
+            i, j = random.sample(range(len(self.nodes)), 2)
+            new_path[i], new_path[j] = new_path[j], new_path[i]
+            new_path = self.two_opt(new_path)  # Apply 2-opt optimization
+            new_distance = self.calculate_total_distance(new_path)
+
+            if (new_distance < current_distance or
+                    math.exp((current_distance - new_distance) / temperature) > random.random()):
+                current_path, current_distance = new_path, new_distance
+                if new_distance < self.best_distance:
+                    self.best_path, self.best_distance = new_path, new_distance
+
+            temperature *= cooling_rate
+            yield self.best_path, self.best_distance  # Yield for real-time update
 
 
 class UI(tk.Tk):
     def __init__(self):
-        tk.Tk.__init__(self)
-        # Set the title of the window
-        self.title("Traveling Salesman")
-        # Hide the minimize/maximize/close decorations at the top of the window frame
-        #   (effectively making it act like a full-screen application)
-        self.option_add("*tearOff", FALSE)
-        # Get the screen width and height
-        width, height = self.winfo_screenwidth(), self.winfo_screenheight()
-        # Set the window width and height to fill the screen
-        self.geometry("%dx%d+0+0" % (width, height))
-        # Set the window content to fill the width * height area
-        self.state("zoomed")
+        super().__init__()
+        self.canvas = tk.Canvas(self, width=800, height=600, bg="white")
+        self.canvas.pack()
+        self.tsp_solver = None
+        self.current_edges = []
+        self.distance_text = None
 
-        self.canvas = Canvas(self)
-        self.canvas.place(x=0, y=0, width=width, height=height)
-        w = width-padding
-        h = height-padding*2
+        # Generate new cities button
+        self.generate_button = tk.Button(self, text="Generate New Cities", command=self.generate_new_cities)
+        self.generate_button.pack(pady=10)
 
-        cities_list = []
-        roads_list = []
-        edge_list = []
+        # Initialize UI elements with blank canvas
+        self.initialize_ui(blank=True)
 
-        def add_city():
-            x = random.randint(padding, w)
-            y = random.randint(padding, h)
+    def initialize_ui(self, blank=False):
+        self.title("Traveling Salesman Problem - Real-Time Solution")
+        if not blank:
+            self.distance_text = self.canvas.create_text(400, 20, text="Distance: 0", font=("Arial", 12))
+        else:
+            self.distance_text = None  # Start without any distance text
 
-            node = Node(x, y)
-            cities_list.append(node)
+    def generate_new_cities(self):
+        # Clear canvas and generate a new set of nodes
+        self.canvas.delete("all")  # Clear all previous drawings
+        nodes = [Node(random.randint(padding, 700), random.randint(padding, 500)) for _ in range(num_cities)]
+        self.tsp_solver = TravelingSalesman(nodes)
 
-        def add_road():
-            a = random.randint(0, len(cities_list)-1)
-            b = random.randint(0, len(cities_list)-1)
+        # Initialize UI to display distance text after generation
+        if not self.distance_text:
+            self.distance_text = self.canvas.create_text(400, 20, text="Distance: 0", font=("Arial", 12))
 
-            road = f'{min(a, b)},{max(a, b)}'
-            while a == b or road in roads_list:
-                a = random.randint(0, len(cities_list)-1)
-                b = random.randint(0, len(cities_list)-1)
-                road = f'{min(a, b)},{max(a, b)}'
+        self.update_path()  # Start solving and drawing path
 
-            edge = Edge(cities_list[a], cities_list[b])
-            roads_list.append(road)
-            edge_list.append(edge)
+    def draw_nodes(self):
+        self.canvas.delete("node")  # Clear previous nodes
+        for i, node in enumerate(self.tsp_solver.nodes):
+            color = start_node_color if i == 0 else node_color
+            node.draw(self.canvas, color=color)
 
-        def generate_city():
-            for c in range(num_cities):
-                add_city()
-            for r in range(num_roads):
-                add_road()
+    def draw_edges(self, path, distance):
+        # Clear previous edges
+        for edge in self.current_edges:
+            self.canvas.delete(edge)
+        self.current_edges = []
 
-        def draw_city():
-            #clear_canvas()
-            for e in edge_list:
-                e.draw(self.canvas)
-            for n in cities_list:
-                n.draw(self.canvas)
+        # Draw edges in the path
+        for i in range(len(path)):
+            a, b = self.tsp_solver.nodes[path[i - 1]], self.tsp_solver.nodes[path[i]]
+            color = best_edge_color if i < len(path) else excluded_edge_color
+            edge_id = self.canvas.create_line(a.x, a.y, b.x, b.y, fill=color, width=road_width)
+            self.current_edges.append(edge_id)
 
-        def draw_genome(genome):
-            #clear_canvas()
-            for e in range(num_roads):
-                edge = edge_list[e]
-                color = 'grey'
-                style = (2, 4)
-                if genome[e]:
-                    color = 'red'
-                    style = (1, 0)
-                edge.draw(self.canvas, color, style)
-            for n in cities_list:
-                n.draw(self.canvas, 'red')
+        # Close the loop by connecting the last node back to the first
+        start_node = self.tsp_solver.nodes[path[0]]
+        end_node = self.tsp_solver.nodes[path[-1]]
+        loop_edge_id = self.canvas.create_line(end_node.x, end_node.y, start_node.x, start_node.y, fill=best_edge_color,
+                                               width=road_width)
+        self.current_edges.append(loop_edge_id)
 
-        # We create a standard banner menu bar and attach it to the window
-        menu_bar = Menu(self)
-        self['menu'] = menu_bar
+        # Update distance display
+        self.canvas.itemconfig(self.distance_text, text=f"Distance: {distance:.2f}")
+        self.canvas.update()
 
-        # We have to individually create the "File", "Edit", etc. cascade menus, and this is the first
-        menu_TS = Menu(menu_bar)
-        # The underline=0 parameter doesn't actually do anything by itself,
-        #   but if you also create an "accelerator" so that users can use the standard alt+key shortcuts
-        #   for the menu, it will underline the appropriate key to indicate the shortcut
-        menu_bar.add_cascade(menu=menu_TS, label='Salesman', underline=0)
-
-        def generate():
-            generate_city()
-            draw_city()
-        # The add_command function adds an item to a menu, as opposed to add_cascade which adds a sub-menu
-        # Note that we use command=generate without the () - we're telling it which function to call,
-        #   not actually calling the function as part of the add_command
-        menu_TS.add_command(label="Generate", command=generate, underline=0)
-
-        # We have to call self.mainloop() in our constructor (__init__) to start the UI loop and display the window
-        self.mainloop()
+    def update_path(self):
+        self.draw_nodes()  # Draw new nodes
+        for path, distance in self.tsp_solver.simulated_annealing():
+            self.draw_edges(path, distance)
 
 
-# In python, we have this odd construct to catch the main thread and instantiate our Window class
-if __name__ == '__main__':
-    UI()
+if __name__ == "__main__":
+    ui = UI()
+    ui.mainloop()
