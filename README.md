@@ -1,31 +1,42 @@
 # UTPB-COSC-6389-Project1
-This repo contains the assignment and provided code base for Project 1 of the graduate Computational Biomimicry class.
 
-The goals of this project are:
-1) Improve student understanding of Python
-2) Understand UI programming considerations
-3) Understand how to represent several hard problems with simple data structures
-4) Gain experience with several optimization techniques, and how to select techniques which will work best on a given problem
+Overview
+This project addresses three classic computational problems using optimization algorithms: the Traveling Salesman Problem (TSP), the Knapsack Problem, and the Graph Coloring Problem. Each algorithm has been enhanced and optimized for improved solution quality, efficiency, interactivity, and user experience.
 
-Description:
-The provided Python code base contains the following:
-1) An implementation of a Knapsack solver using a rudimentary genetic algorithm approach which correctly displays the problem and the best potential solution in the UI in real time, but is very poorly optimized.
-2) An implementation of a Traveling Salesman network generator which displays the network, but does not provide any meaningful mechanism for solving the TSP and will not currently be capable of properly displaying candidate solutions in real time.
-3) A series of code snippets which provide examples of the Hill Climbing, Simulated Annealing, and Tabu Search algorithms, along with all of the selection, crossover, and mutation strategies we covered in class.
-Your goal is to accomplish three things, and I would recommend you tackle them in order.
+Problem Summaries and Enhancements
+Traveling Salesman Problem (TSP)
+Description
+The TSP seeks the shortest possible route that visits a list of cities and returns to the starting point. This project implements a simulated annealing-based approach, optimized for more efficient and accurate results.
 
-First, modify the Knapsack solver to make use of a better tactic for solving the problem.  The existing solution uses a fitness function which tends to heavily bias the population toward specific solutions.  The use of the roulette wheel selection system reinforces this bias.  The crossover and mutation methods in use are single-point crossover, and single-point binary flip mutation.  Both of these tend to fail to produce the level of diversity in the population that we need to efficiently find solutions.  Experiment with the other techniques at your disposal and implement the one you believe is most effective.
+Enhancements and Contributions
 
-Second, modify the TSP code to both allow it to efficiently arrive at a high-quality solution to the problem, and display its current best solution in real time, by modifying the colors/fill of the displayed network elements to differentiate those which are included in the current solution from those which are not.  Again, your goal here is to try to find the most efficient method you can to solve TSP using the tools available to you.
+Solution Quality: Originally used only basic Simulated Annealing, now enhanced with 2-Opt optimization to improve local adjustments and path quality.
+Initialization: Updated from a random path to a Nearest-Neighbor Heuristic for a high-quality starting path.
+Efficiency: Optimized the cooling rate and temperature settings, which reduces the iteration count for faster convergence.
+Interactivity: Added a feature allowing users to dynamically generate points and observe real-time updates.
+Solver Selection: Implemented an option to choose between Simulated Annealing and Ant Colony Optimization.
+Readability and Modularity: Restructured code to be modular, making it more organized and easier to read.
+Knapsack Problem
+Description
+The Knapsack Problem involves selecting items with given weights and values to maximize the total value without exceeding a weight limit. This project utilizes genetic algorithms with several enhancements for optimal performance.
 
-Third, select one additional problem from https://en.wikipedia.org/wiki/List_of_NP-complete_problems (not including TSP or Knapsack), and create a complete generation/display/solver application for that problem.
+Enhancements and Contributions
 
-Fourth, create an implementation of one of the swarm-based optimization techniques we discussed in class (particle swarms or ant-colony optimization) and include it as an optional solver for either your TSP or your extra problem.
+Fitness Function: Changed from an absolute difference from the target value to a scaled normalization, reducing bias and improving consistency in the search.
+Selection Method: Transitioned from weighted to tournament selection to promote diversity and prevent convergence to local optima.
+Crossover Method: Updated from single-point crossover to uniform crossover, increasing genetic diversity and improving trait mixing.
+Mutation Method: Enhanced with multi-point mutation for broader search exploration and effective local minima escape.
+Elitism: Modified from simple to selective elitism, balancing best-solution retention with population diversity.
+UI Updates: Replaced standard updates with asynchronous updates using self.after(), making the interface smoother and more responsive.
+Graph Coloring Problem
+Description
+This program applies a genetic algorithm to solve the Graph Coloring Problem, where the goal is to assign colors to vertices such that no adjacent vertices share the same color.
 
-Grading criteria:
-1) If the code submitted via your pull request does not compile, the grade is zero.
-2) If the code crashes due to forseeable unhandled exceptions, the grade is zero.
-3) For full points, the code must correctly perform the relevant algorithms and display the intermediate steps in real time, via the UI.
+Algorithm Details and Contributions
 
-Deliverables for this project:
-Three Python files, one containing the implementation of the Knapsack application, another for the TSP application, and a third for the user's choice problem application.
+Initialization: Begins with a randomly generated population with color assignments for all vertices.
+Fitness Evaluation: Measures fitness based on the number of edge conflicts, with a goal to minimize conflicts.
+Selection: Selects the top half of individuals based on fitness to ensure the best solutions progress.
+Crossover: Uses a multi-point crossover for diverse trait mixing, helping the algorithm to escape local optima.
+Adaptive Mutation: Implements a probabilistic mutation that adapts over generations, shifting from exploration to refinement as the algorithm progresses.
+Termination and Real-Time Feedback: Terminates early if a solution with zero conflicts is found, providing visual feedback and generation tracking.
