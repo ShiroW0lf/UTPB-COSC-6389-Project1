@@ -1,8 +1,6 @@
 # UTPB-COSC-6389-Project1
 
-# Project Title
 
-### Overview
 This project addresses three classic computational problems using optimization algorithms: the Traveling Salesman Problem (TSP), the Knapsack Problem, and the Graph Coloring Problem. Each algorithm has been enhanced and optimized for improved solution quality, efficiency, interactivity, and user experience.
 
 ## Problem Summaries and Enhancements
