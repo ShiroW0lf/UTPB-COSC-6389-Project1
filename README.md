@@ -47,6 +47,8 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 ## UI Navigation
 
 This document provides a guide for navigating the user interface of the **Graph Coloring Problem Solver** application. The app utilizes a genetic algorithm to solve the graph coloring problem, where the goal is to assign colors to vertices such that no two adjacent vertices share the same color.
+![image](https://github.com/user-attachments/assets/4e09a207-0e86-4ee2-8030-644055cb07f0)
+
 
 ## User Interface Components
 
