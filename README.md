@@ -44,7 +44,7 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 - **Adaptive Mutation**: Implements a probabilistic mutation that adapts over generations, shifting from exploration to refinement as the algorithm progresses.
 - **Termination and Real-Time Feedback**: Terminates early if a solution with zero conflicts is found, providing visual feedback and generation tracking.
 
-# Graph Coloring Problem Solver - UI Navigation
+## UI Navigation
 
 This document provides a guide for navigating the user interface of the **Graph Coloring Problem Solver** application. The app utilizes a genetic algorithm to solve the graph coloring problem, where the goal is to assign colors to vertices such that no two adjacent vertices share the same color.
 
