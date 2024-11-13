@@ -35,7 +35,8 @@ The Knapsack Problem involves selecting items with given weights and values to m
 
 **Description**  
 This program applies a genetic algorithm to solve the Graph Coloring Problem, where the goal is to assign colors to vertices such that no adjacent vertices share the same color.
-(Note: Adjacent Vertices are connect by a dashed line. The line should be red if the adjacent vertices are same color, showing conflict)
+(Note: Adjacent Vertices are connect by a dashed line. The line should be red if the adjacent vertices are same color, showing conflict
+)
 
 **Algorithm Details and Contributions**  
 - **Initialization**: Begins with a randomly generated population with color assignments for all vertices.
@@ -48,7 +49,7 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 ## UI Navigation
 
 
-![img.png](img.png)
+![img_1.png](img_1.png)![img.png](img.png)
 
 
 ## User Interface Components

@@ -42,11 +42,14 @@ class GraphColoringApp:
         self.colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan", "brown", "gray"]
 
     def create_graph(self):
-        """Generate random adjacency matrix based on user input and start algorithm."""
-        self.n = int(self.vertex_entry.get())  # number of vertices
-        self.graph = np.random.randint(0, 2, size=(self.n, self.n))
-        np.fill_diagonal(self.graph, 0)  # No self-loop (diagonal 0)
-        self.graph = np.triu(self.graph, 1)  # Make graph symmetric
+        """Generate circular adjacency matrix based on user input and start algorithm."""
+        self.n = int(self.vertex_entry.get())  # Number of vertices
+        self.graph = np.zeros((self.n, self.n), dtype=int)
+
+        # Set adjacency in a circular manner
+        for i in range(self.n):
+            self.graph[i][(i + 1) % self.n] = 1  # Connect to next vertex
+            self.graph[(i + 1) % self.n][i] = 1  # Connect back to previous vertex
 
         self.max_num_colors = self.get_max_colors()
         self.population = self.create_population()
@@ -55,8 +58,8 @@ class GraphColoringApp:
         self.solution_label.config(text="")  # Reset solution status
         self.canvas.delete("all")  # Clear previous graph
 
-        # Draw graph with empty coloring (vertices only, no solution)
-        self.draw_graph(solution=None)
+        # Draw the initial graph layout without coloring (before solution)
+        self.draw_graph()
 
     def get_max_colors(self):
         """Get maximum number of colors based on graph structure."""
@@ -83,23 +86,22 @@ class GraphColoringApp:
         """Draw the graph on the canvas, showing adjacency and highlighting conflicts if any."""
         self.canvas.delete("all")  # Clear previous graph
 
-        # Generate positions for vertices
+        # Generate positions for vertices in a circle
         positions = self.generate_vertices_positions()
 
         # Draw edges (connections between adjacent vertices)
         for i in range(self.n):
-            for j in range(i + 1, self.n):
-                if self.graph[i][j] == 1:  # Only draw if vertices i and j are adjacent
-                    x1, y1 = positions[i]
-                    x2, y2 = positions[j]
+            next_vertex = (i + 1) % self.n  # Circular adjacency
+            x1, y1 = positions[i]
+            x2, y2 = positions[next_vertex]
 
-                    # Check if the vertices share the same color in the solution
-                    if solution is not None and solution[i] == solution[j]:
-                        # Draw red line for conflict
-                        self.canvas.create_line(x1, y1, x2, y2, fill="red", width=2)
-                    else:
-                        # Draw normal line for adjacency
-                        self.canvas.create_line(x1, y1, x2, y2, fill="black", dash=(2, 2))
+            # Check if the vertices share the same color in the solution
+            if solution is not None and solution[i] == solution[next_vertex]:
+                # Draw red line for conflict
+                self.canvas.create_line(x1, y1, x2, y2, fill="red", width=2)
+            else:
+                # Draw normal line for adjacency
+                self.canvas.create_line(x1, y1, x2, y2, fill="black", dash=(2, 2))
 
         # Draw vertices (nodes)
         for i in range(self.n):
