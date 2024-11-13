@@ -47,7 +47,7 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 ## UI Navigation
 
 
-![image](https://github.com/user-attachments/assets/4e09a207-0e86-4ee2-8030-644055cb07f0)
+![img.png](img.png)
 
 
 ## User Interface Components
