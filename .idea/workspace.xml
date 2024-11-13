@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b6706e59-a4b8-40d2-8413-25b3861306a8" name="Changes" comment="project 1 requirement complete">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GraphColor.py" beforeDir="false" afterPath="$PROJECT_DIR$/GraphColor.py" afterDir="false" />
+    <list default="true" id="b6706e59-a4b8-40d2-8413-25b3861306a8" name="Changes" comment="Graph solver updated">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -217,7 +216,21 @@
       <option name="project" value="LOCAL" />
       <updated>1731511931117</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Graph solver updated">
+      <created>1731537485907</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1731537485907</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Graph solver updated">
+      <created>1731537571259</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1731537571259</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -236,6 +249,7 @@
     <MESSAGE value="Ant colony to TSP" />
     <MESSAGE value="i" />
     <MESSAGE value="project 1 requirement complete" />
-    <option name="LAST_COMMIT_MESSAGE" value="project 1 requirement complete" />
+    <MESSAGE value="Graph solver updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="Graph solver updated" />
   </component>
 </project>
