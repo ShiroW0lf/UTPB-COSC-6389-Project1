@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6706e59-a4b8-40d2-8413-25b3861306a8" name="Changes" comment="project 1 requirement complete">
-      <change afterPath="$PROJECT_DIR$/Knapsack1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GraphColor.py" beforeDir="false" afterPath="$PROJECT_DIR$/GraphColor.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +36,7 @@
       <recent name="C:\Users\aswin\OneDrive\Desktop\Masters\Second Sem\UTPB-COSC-6389-Project1" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Knapsack1">
+  <component name="RunManager" selected="Python.GraphColor">
     <configuration name="GraphColor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Project1" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -165,11 +165,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Knapsack1" />
-        <item itemvalue="Python.Knapsack (1)" />
-        <item itemvalue="Python.Knapsack" />
         <item itemvalue="Python.GraphColor" />
         <item itemvalue="Python.TravelingSalesman" />
+        <item itemvalue="Python.Knapsack (1)" />
+        <item itemvalue="Python.Knapsack1" />
+        <item itemvalue="Python.Knapsack" />
       </list>
     </recent_temporary>
   </component>
@@ -210,7 +210,14 @@
       <option name="project" value="LOCAL" />
       <updated>1730418861306</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="project 1 requirement complete">
+      <created>1731511931117</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1731511931117</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

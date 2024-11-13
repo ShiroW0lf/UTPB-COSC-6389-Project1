@@ -1,6 +1,7 @@
 import tkinter as tk
 import numpy as np
 import random
+from random import randint
 
 class GraphColoringApp:
     def __init__(self, root):
@@ -17,7 +18,7 @@ class GraphColoringApp:
         create_button.grid(row=1, column=0, columnspan=2)
 
         # Canvas to visualize graph
-        self.canvas = tk.Canvas(root, width=400, height=400)
+        self.canvas = tk.Canvas(root, width=500, height=500)
         self.canvas.grid(row=2, column=0, columnspan=2)
 
         # Label to display generation count
@@ -29,128 +30,175 @@ class GraphColoringApp:
         self.solution_label.grid(row=4, column=0, columnspan=2)
 
         # Button to solve graph coloring
-        solve_button = tk.Button(root, text="Find Solution",
-                                 command=self.solve_with_genetic_algorithm)
+        solve_button = tk.Button(root, text="Find Solution", command=self.solve_with_genetic_algorithm)
         solve_button.grid(row=5, column=0, columnspan=2)
 
         # Parameters for genetic algorithm
-        self.population_size = 100
-        self.num_colors = None
+        self.population_size = 60
+        self.max_num_colors = None
+        self.graph = None
+
+        # Color palette for vertices
+        self.colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan", "brown", "gray"]
 
     def create_graph(self):
         """Generate random adjacency matrix based on user input and start algorithm."""
-        num_vertices = int(self.vertex_entry.get())
-        self.num_colors = num_vertices
-        self.adj_matrix = np.random.randint(0, 2, size=(num_vertices, num_vertices))
-        np.fill_diagonal(self.adj_matrix, 0)  # No self-loops
-        self.num_vertices = num_vertices
-        self.vertices_positions = self.generate_vertices_positions()
+        self.n = int(self.vertex_entry.get())  # number of vertices
+        self.graph = np.random.randint(0, 2, size=(self.n, self.n))
+        np.fill_diagonal(self.graph, 0)  # No self-loop (diagonal 0)
+        self.graph = np.triu(self.graph, 1)  # Make graph symmetric
+
+        self.max_num_colors = self.get_max_colors()
+        self.population = self.create_population()
 
         # Clear the solution message and canvas
         self.solution_label.config(text="")  # Reset solution status
         self.canvas.delete("all")  # Clear previous graph
 
-        self.draw_graph()
+        # Draw graph with empty coloring (vertices only, no solution)
+        self.draw_graph(solution=None)
 
-        # Solve button for running genetic algorithm
-        solve_button = tk.Button(self.root, text="Find Solution",
-                                 command=self.solve_with_genetic_algorithm)
-        solve_button.grid(row=5, column=0, columnspan=2)
+    def get_max_colors(self):
+        """Get maximum number of colors based on graph structure."""
+        return self.n  # Maximum colors needed could be the number of vertices in the worst case
+
+    def create_chromosome(self):
+        """Generate a random chromosome for a solution."""
+        return np.random.randint(1, self.max_num_colors + 1, size=(self.n))
+
+    def create_population(self):
+        """Create a population of chromosomes."""
+        return np.array([self.create_chromosome() for _ in range(self.population_size)])
+
+    def calc_fitness(self, chromosome):
+        """Calculate fitness based on penalty for adjacent vertices sharing the same color."""
+        penalty = 0
+        for vertex1 in range(self.n):
+            for vertex2 in range(vertex1 + 1, self.n):
+                if self.graph[vertex1][vertex2] == 1 and chromosome[vertex1] == chromosome[vertex2]:
+                    penalty += 1
+        return penalty
+
+    def draw_graph(self, solution=None):
+        """Draw the graph on the canvas, showing adjacency and highlighting conflicts if any."""
+        self.canvas.delete("all")  # Clear previous graph
+
+        # Generate positions for vertices
+        positions = self.generate_vertices_positions()
+
+        # Draw edges (connections between adjacent vertices)
+        for i in range(self.n):
+            for j in range(i + 1, self.n):
+                if self.graph[i][j] == 1:  # Only draw if vertices i and j are adjacent
+                    x1, y1 = positions[i]
+                    x2, y2 = positions[j]
+
+                    # Check if the vertices share the same color in the solution
+                    if solution is not None and solution[i] == solution[j]:
+                        # Draw red line for conflict
+                        self.canvas.create_line(x1, y1, x2, y2, fill="red", width=2)
+                    else:
+                        # Draw normal line for adjacency
+                        self.canvas.create_line(x1, y1, x2, y2, fill="black", dash=(2, 2))
+
+        # Draw vertices (nodes)
+        for i in range(self.n):
+            x, y = positions[i]
+
+            # Determine the color for the node based on the solution (if available)
+            color = self.colors[solution[i] % len(self.colors)] if solution is not None else "gray"
+
+            # Draw node circle with color
+            self.canvas.create_oval(x - 10, y - 10, x + 10, y + 10, fill=color, outline="black")
+
+            # Label the node with its index
+            self.canvas.create_text(x, y, text=str(i), fill="white")
 
     def generate_vertices_positions(self):
+        """Generate positions for the vertices on the canvas."""
         radius = 150
-        center_x, center_y = 200, 200
+        center_x, center_y = 250, 250
         positions = []
-        for i in range(self.num_vertices):
-            angle = 2 * np.pi * i / self.num_vertices
+        for i in range(self.n):
+            angle = 2 * np.pi * i / self.n
             x = center_x + radius * np.cos(angle)
             y = center_y + radius * np.sin(angle)
             positions.append((x, y))
         return positions
 
-    def draw_graph(self, solution=None):
-        self.canvas.delete("all")
-        colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan"]
-
-        for i, (x, y) in enumerate(self.vertices_positions):
-            color = colors[solution[i] % len(colors)] if solution else "gray"
-            self.canvas.create_oval(x - 20, y - 20, x + 20, y + 20, fill=color, outline="black")
-            self.canvas.create_text(x, y, text=str(i + 1), font=("Arial", 14))
-
-        for i in range(self.num_vertices):
-            for j in range(i + 1, self.num_vertices):
-                if self.adj_matrix[i][j] == 1:
-                    x1, y1 = self.vertices_positions[i]
-                    x2, y2 = self.vertices_positions[j]
-                    self.canvas.create_line(x1, y1, x2, y2, fill="black")
-
     def solve_with_genetic_algorithm(self):
         """Run the genetic algorithm to solve the graph coloring problem."""
-        self.population = self.generate_population()
-        self.evolve_graph_coloring()
+        generations = 200
+        best_fitness = float('inf')
+        fittest = None
 
-    def generate_population(self):
-        """Initialize a random population of color assignments."""
-        return [[random.randint(0, self.num_colors - 1) for _ in range(self.num_vertices)]
-                for _ in range(self.population_size)]
-
-    def fitness(self, individual):
-        """Calculate fitness based strictly on the number of conflicts."""
-        conflicts = 0
-        for i in range(self.num_vertices):
-            for j in range(i + 1, self.num_vertices):
-                if self.adj_matrix[i][j] == 1 and individual[i] == individual[j]:
-                    conflicts += 1
-        return conflicts  # Lower is better; zero conflicts is ideal.
-
-    def evolve_graph_coloring(self):
-        generations = 1000
         for generation in range(generations):
-            # Update generation label on UI
             self.generation_label.config(text=f"Generation: {generation}")
             self.root.update_idletasks()
 
-            fitness_scores = [self.fitness(ind) for ind in self.population]
-            best_fitness = min(fitness_scores)
+            # Selection
+            population = self.tournament_selection()
 
-            # Check if a solution has been found
-            if best_fitness == 0:  # Ideal solution reached
-                solution = self.population[fitness_scores.index(best_fitness)]
-                self.draw_graph(solution)
-                self.solution_label.config(text="Solution Found!")  # Update solution label
+            # Crossover
+            children_population = []
+            random.shuffle(population)
+            for i in range(0, len(population) - 1, 2):
+                child1, child2 = self.one_point_crossover(population[i], population[i + 1])
+                children_population.append(child1)
+                children_population.append(child2)
+
+            # Mutation
+            for chromosome in children_population:
+                mutation_chance = 0.65 if generation < 100 else (0.5 if generation < 150 else 0.15)
+                self.mutation(chromosome, mutation_chance)
+
+            # Update population
+            self.population = children_population
+            best_fitness, fittest = self.get_best_fitness()
+
+            if best_fitness == 0:
+                self.draw_graph(fittest)
+                self.solution_label.config(text="Solution Found!")
                 return
 
-            # Select parents and generate new population
-            parents = self.select_parents(fitness_scores)
-            new_population = parents[:]
-            while len(new_population) < self.population_size:
-                parent1, parent2 = random.sample(parents, 2)
-                child = self.multi_point_crossover(parent1, parent2)
-                child = self.adaptive_mutate(child, generation)
-                new_population.append(child)
+        self.draw_graph(fittest)
 
-            # Update population and show best solution found so far
-            self.population = new_population
-            self.draw_graph(self.population[fitness_scores.index(best_fitness)])
+    def tournament_selection(self):
+        """Tournament selection to choose parents for crossover."""
+        new_population = []
+        while len(new_population) < self.population_size:
+            random.shuffle(self.population)
+            for i in range(0, self.population_size - 1, 2):
+                if self.calc_fitness(self.population[i]) < self.calc_fitness(self.population[i + 1]):
+                    new_population.append(self.population[i])
+                else:
+                    new_population.append(self.population[i + 1])
+        return new_population
 
-    def select_parents(self, fitness_scores):
-        """Select individuals with the lowest fitness scores (less conflicts)."""
-        sorted_population = [ind for _, ind in sorted(zip(fitness_scores, self.population), key=lambda x: x[0])]
-        return sorted_population[:self.population_size // 2]
+    def one_point_crossover(self, parent1, parent2):
+        """One-point crossover between two parents."""
+        split_point = randint(1, self.n - 1)
+        child1 = np.concatenate((parent1[:split_point], parent2[split_point:]))
+        child2 = np.concatenate((parent2[:split_point], parent1[split_point:]))
+        return child1, child2
 
-    def multi_point_crossover(self, parent1, parent2):
-        """Perform multi-point crossover with two crossover points."""
-        crossover_point1 = random.randint(1, self.num_vertices // 2)
-        crossover_point2 = random.randint(crossover_point1, self.num_vertices - 1)
-        return parent1[:crossover_point1] + parent2[crossover_point1:crossover_point2] + parent1[crossover_point2:]
+    def mutation(self, chromosome, chance):
+        """Mutate a chromosome based on a given chance."""
+        if random.uniform(0, 1) <= chance:
+            vertex = randint(0, self.n - 1)
+            chromosome[vertex] = randint(1, self.max_num_colors)
 
-    def adaptive_mutate(self, individual, generation):
-        """Adaptive mutation rate to allow more exploration in early generations."""
-        mutation_rate = max(0.05, 0.5 - (generation * 0.0005))
-        for i in range(self.num_vertices):
-            if random.random() < mutation_rate:
-                individual[i] = random.randint(0, self.num_colors - 1)
-        return individual
+    def get_best_fitness(self):
+        """Get the best fitness from the current population."""
+        best_fitness = float('inf')
+        fittest = None
+        for individual in self.population:
+            fitness = self.calc_fitness(individual)
+            if fitness < best_fitness:
+                best_fitness = fitness
+                fittest = individual
+        return best_fitness, fittest
+
 
 # Run the app
 root = tk.Tk()
