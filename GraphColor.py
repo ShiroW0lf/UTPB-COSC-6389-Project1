@@ -30,8 +30,12 @@ class GraphColoringApp:
         self.solution_label.grid(row=4, column=0, columnspan=2)
 
         # Button to solve graph coloring
-        solve_button = tk.Button(root, text="Find Solution", command=self.solve_with_genetic_algorithm)
-        solve_button.grid(row=5, column=0, columnspan=2)
+        self.solve_button = tk.Button(root, text="Find Solution", command=self.solve_with_genetic_algorithm)
+        self.solve_button.grid(row=5, column=0, columnspan=2)
+
+        # Button to restart
+        self.restart_button = tk.Button(root, text="Restart", command=self.restart, state=tk.DISABLED)
+        self.restart_button.grid(row=6, column=0, columnspan=2)
 
         # Parameters for genetic algorithm
         self.population_size = 60
@@ -161,6 +165,8 @@ class GraphColoringApp:
             if best_fitness == 0:
                 self.draw_graph(fittest)
                 self.solution_label.config(text="Solution Found!")
+                self.solve_button.config(state=tk.DISABLED)  # Disable solve button
+                self.restart_button.config(state=tk.NORMAL)  # Enable restart button
                 return
 
         self.draw_graph(fittest)
@@ -201,6 +207,14 @@ class GraphColoringApp:
                 fittest = individual
         return best_fitness, fittest
 
+    def restart(self):
+        """Reset everything to start from scratch."""
+        self.solve_button.config(state=tk.NORMAL)  # Enable solve button
+        self.restart_button.config(state=tk.DISABLED)  # Disable restart button
+        self.solution_label.config(text="")  # Reset solution message
+        self.generation_label.config(text="Generation: 0")  # Reset generation label
+        self.canvas.delete("all")  # Clear the canvas
+        self.vertex_entry.delete(0, tk.END)  # Clear the vertex entry field
 
 # Run the app
 root = tk.Tk()

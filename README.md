@@ -57,7 +57,7 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 1. **Vertex Input Field**:
    - **Label**: "Enter number of vertices:"
    - **Input Box**: Enter the desired number of vertices for your graph.
-   
+
 2. **Create Graph Button**:
    - **Button**: **Create Graph**
    - Click this button to generate a random graph based on the number of vertices specified. This action resets the canvas, allowing for new graph inputs.
@@ -91,6 +91,7 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 
 4. **Monitor the Progress**:
    - Observe the graph as the algorithm works towards finding a solution. If a solution is found, the canvas will update to show the colored vertices, and the solution status label will indicate success.
+
 
 ---
 
