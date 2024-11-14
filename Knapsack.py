@@ -3,8 +3,9 @@ import random
 import tkinter as tk
 from tkinter import *
 import threading
+import numpy as np
 
-# Configuration variables
+# Constants
 num_items = 100
 frac_target = 0.7
 min_value = 128
@@ -25,7 +26,6 @@ def random_rgb_color():
     hex_color = '#{:02x}{:02x}{:02x}'.format(red, green, blue)
     return hex_color
 
-
 class Item:
     def __init__(self):
         self.value = random.randint(min_value, max_value)
@@ -44,9 +44,21 @@ class Item:
     def draw(self, canvas, active=False):
         canvas.create_text(self.x + self.w + item_padding + stroke_width * 2, self.y + self.h / 2, text=f'{self.value}')
         if active:
-            canvas.create_rectangle(self.x, self.y, self.x + self.w, self.y + self.h, fill=self.color, outline=self.color, width=stroke_width)
+            canvas.create_rectangle(self.x,
+                                    self.y,
+                                    self.x + self.w,
+                                    self.y + self.h,
+                                    fill=self.color,
+                                    outline=self.color,
+                                    width=stroke_width)
         else:
-            canvas.create_rectangle(self.x, self.y, self.x + self.w, self.y + self.h, fill='', outline=self.color, width=stroke_width)
+            canvas.create_rectangle(self.x,
+                                    self.y,
+                                    self.x + self.w,
+                                    self.y + self.h,
+                                    fill='',
+                                    outline=self.color,
+                                    width=stroke_width)
 
 
 class UI(tk.Tk):
@@ -61,7 +73,6 @@ class UI(tk.Tk):
         self.canvas.place(x=0, y=0, width=self.width, height=self.height)
         self.items_list = []
 
-        # Menu setup
         menu_bar = Menu(self)
         self['menu'] = menu_bar
         menu_K = Menu(menu_bar)
@@ -73,6 +84,8 @@ class UI(tk.Tk):
 
         menu_K.add_command(label="Generate", command=generate, underline=0)
 
+        self.target = 0
+
         def set_target():
             target_set = []
             for x in range(int(num_items * frac_target)):
@@ -80,7 +93,9 @@ class UI(tk.Tk):
                 while item in target_set:
                     item = self.items_list[random.randint(0, len(self.items_list) - 1)]
                 target_set.append(item)
-            total = sum(item.value for item in target_set)
+            total = 0
+            for item in target_set:
+                total += item.value
             self.target = total
             self.draw_target()
 
@@ -111,8 +126,11 @@ class UI(tk.Tk):
         for i in range(num_items):
             self.add_item()
 
-        item_max = max(self.items_list, key=lambda x: x.value).value
-        item_min = min(self.items_list, key=lambda x: x.value).value
+        item_max = 0
+        item_min = 9999
+        for item in self.items_list:
+            item_min = min(item_min, item.value)
+            item_max = max(item_max, item.value)
 
         w = self.width - screen_padding
         h = self.height - screen_padding
@@ -129,7 +147,8 @@ class UI(tk.Tk):
                 item_h = max(item.value / item_max * row_h, 1)
                 item.place(screen_padding + x * row_w + x * item_padding,
                            screen_padding + y * row_h + y * item_padding,
-                           item_w, item_h)
+                           item_w,
+                           item_h)
 
     def clear_canvas(self):
         self.canvas.delete("all")
@@ -173,13 +192,13 @@ class UI(tk.Tk):
         global num_generations
 
         def gene_sum(genome):
-            return sum(self.items_list[i].value for i in range(len(genome)) if genome[i])
+            return np.sum(np.array([item.value for item, g in zip(self.items_list, genome) if g]))
 
         def fitness(genome):
             total_value = gene_sum(genome)
             if total_value > self.target:
-                return 0
-            return total_value / self.target
+                return 0  # Penalize solutions that exceed the target
+            return total_value / self.target  # Maximize value while staying under target
 
         def get_population(last_pop=None):
             population = []
@@ -200,12 +219,16 @@ class UI(tk.Tk):
             return population
 
         def select_parents(population):
-            tournament_size = 5
-            tournament = random.sample(population, tournament_size)
-            return max(tournament, key=lambda x: fitness(x)), max(tournament, key=lambda x: fitness(x))
+            def tournament_select():
+                tournament_size = 5
+                tournament = random.sample(population, tournament_size)
+                return max(tournament, key=lambda x: fitness(x))
+
+            return tournament_select(), tournament_select()
 
         def crossover(parent1, parent2):
-            return [random.choice([gene1, gene2]) for gene1, gene2 in zip(parent1, parent2)]
+            crossover_point = random.randint(0, num_items - 1)
+            return parent1[:crossover_point] + parent2[crossover_point:]
 
         def mutate(genome):
             return [not gene if random.random() < mutation_rate else gene for gene in genome]
@@ -229,6 +252,7 @@ class UI(tk.Tk):
                 self.after(int(sleep_time * 1000), generation_step, generation + 1, get_population(pop))
 
         generation_step()
+
 
 if __name__ == '__main__':
     UI()
