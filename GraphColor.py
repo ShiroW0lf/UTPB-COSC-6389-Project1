@@ -42,8 +42,14 @@ class GraphColoringApp:
         self.max_num_colors = None
         self.graph = None
 
-        # Color palette for vertices
-        self.colors = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "cyan", "brown", "gray"]
+        # Extended color palette for vertices
+        self.colors = [
+            "red", "blue", "green", "yellow", "purple", "orange", "pink",
+            "cyan", "brown", "gray", "magenta", "lime", "teal", "navy",
+            "olive", "maroon", "aqua", "fuchsia", "silver", "gold", "indigo",
+            "violet",  "turquoise", "beige", "lavender",
+            "coral", "chocolate", "salmon", "plum", "khaki"
+        ]
 
     def create_graph(self):
         """Generate circular adjacency matrix based on user input and start algorithm."""
@@ -84,7 +90,79 @@ class GraphColoringApp:
             for vertex2 in range(vertex1 + 1, self.n):
                 if self.graph[vertex1][vertex2] == 1 and chromosome[vertex1] == chromosome[vertex2]:
                     penalty += 1
-        return penalty
+        # Higher fitness score is better, so we return negative of penalty
+        return -penalty
+
+    def targeted_mutation(self, chromosome, chance):
+        """Enhanced mutation to resolve conflicts in coloring adjacent vertices."""
+        if random.uniform(0, 1) <= chance:
+            for vertex1 in range(self.n):
+                for vertex2 in range(self.n):
+                    if self.graph[vertex1][vertex2] == 1 and chromosome[vertex1] == chromosome[vertex2]:
+                        # Change the color of one of the conflicting vertices
+                        chromosome[vertex1] = random.choice(
+                            [color for color in range(1, self.max_num_colors + 1) if color != chromosome[vertex2]]
+                        )
+        return chromosome
+
+    def roulette_wheel_selection(self):
+        """Roulette wheel selection to choose parents for crossover."""
+        fitness_values = np.array([self.calc_fitness(p) for p in self.population])
+
+        # Invert fitness scores to get selection probabilities (lower fitness = higher probability)
+        max_fitness = fitness_values.max() + 1
+        probabilities = (max_fitness - fitness_values) / np.sum(max_fitness - fitness_values)
+
+        # Ensure population is 1-dimensional for np.random.choice
+        selected_indices = np.random.choice(len(self.population), size=self.population_size, replace=True,
+                                            p=probabilities)
+        parents = self.population[selected_indices]
+
+        return parents
+
+    def two_point_crossover(self, parent1, parent2):
+        """Two-point crossover between two parents."""
+        split_point1 = randint(1, self.n - 2)
+        split_point2 = randint(split_point1 + 1, self.n - 1)
+        child1 = np.concatenate((parent1[:split_point1], parent2[split_point1:split_point2], parent1[split_point2:]))
+        child2 = np.concatenate((parent2[:split_point1], parent1[split_point1:split_point2], parent2[split_point2:]))
+        return child1, child2
+
+    def solve_with_genetic_algorithm(self):
+        """Run the genetic algorithm to solve the graph coloring problem."""
+        generations = 1000
+        best_fitness = float('inf')
+        fittest = None
+
+        for generation in range(generations):
+            self.generation_label.config(text=f"Generation: {generation}")
+            self.root.update_idletasks()  # Update the display
+
+            # Selection, Crossover, Mutation, and Population Update as before
+            population = self.roulette_wheel_selection()
+            children_population = []
+
+            for i in range(0, len(population) - 1, 2):
+                child1, child2 = self.two_point_crossover(population[i], population[i + 1])
+                child1 = self.targeted_mutation(child1, 0.65 if generation < 100 else 0.15)
+                child2 = self.targeted_mutation(child2, 0.65 if generation < 100 else 0.15)
+                children_population.append(child1)
+                children_population.append(child2)
+
+            self.population = np.array(children_population)
+            best_fitness, fittest = self.get_best_fitness()
+
+            if best_fitness == 0:
+                if self.check_solution_validity(fittest):  # New method for strict validation
+                    self.draw_graph(fittest)
+                    self.solution_label.config(text="Solution Found!")
+                    self.solve_button.config(state=tk.DISABLED)
+                    self.restart_button.config(state=tk.NORMAL)
+                    return
+                else:
+                    best_fitness = float('inf')  # Reset and continue if validation fails
+
+        self.draw_graph(fittest)
 
     def draw_graph(self, solution=None):
         """Draw the graph on the canvas, showing adjacency and highlighting conflicts if any."""
@@ -132,70 +210,6 @@ class GraphColoringApp:
             positions.append((x, y))
         return positions
 
-    def solve_with_genetic_algorithm(self):
-        """Run the genetic algorithm to solve the graph coloring problem."""
-        generations = 200
-        best_fitness = float('inf')
-        fittest = None
-
-        for generation in range(generations):
-            self.generation_label.config(text=f"Generation: {generation}")
-            self.root.update_idletasks()
-
-            # Selection
-            population = self.tournament_selection()
-
-            # Crossover
-            children_population = []
-            random.shuffle(population)
-            for i in range(0, len(population) - 1, 2):
-                child1, child2 = self.one_point_crossover(population[i], population[i + 1])
-                children_population.append(child1)
-                children_population.append(child2)
-
-            # Mutation
-            for chromosome in children_population:
-                mutation_chance = 0.65 if generation < 100 else (0.5 if generation < 150 else 0.15)
-                self.mutation(chromosome, mutation_chance)
-
-            # Update population
-            self.population = children_population
-            best_fitness, fittest = self.get_best_fitness()
-
-            if best_fitness == 0:
-                self.draw_graph(fittest)
-                self.solution_label.config(text="Solution Found!")
-                self.solve_button.config(state=tk.DISABLED)  # Disable solve button
-                self.restart_button.config(state=tk.NORMAL)  # Enable restart button
-                return
-
-        self.draw_graph(fittest)
-
-    def tournament_selection(self):
-        """Tournament selection to choose parents for crossover."""
-        new_population = []
-        while len(new_population) < self.population_size:
-            random.shuffle(self.population)
-            for i in range(0, self.population_size - 1, 2):
-                if self.calc_fitness(self.population[i]) < self.calc_fitness(self.population[i + 1]):
-                    new_population.append(self.population[i])
-                else:
-                    new_population.append(self.population[i + 1])
-        return new_population
-
-    def one_point_crossover(self, parent1, parent2):
-        """One-point crossover between two parents."""
-        split_point = randint(1, self.n - 1)
-        child1 = np.concatenate((parent1[:split_point], parent2[split_point:]))
-        child2 = np.concatenate((parent2[:split_point], parent1[split_point:]))
-        return child1, child2
-
-    def mutation(self, chromosome, chance):
-        """Mutate a chromosome based on a given chance."""
-        if random.uniform(0, 1) <= chance:
-            vertex = randint(0, self.n - 1)
-            chromosome[vertex] = randint(1, self.max_num_colors)
-
     def get_best_fitness(self):
         """Get the best fitness from the current population."""
         best_fitness = float('inf')
@@ -207,14 +221,22 @@ class GraphColoringApp:
                 fittest = individual
         return best_fitness, fittest
 
+    # New method outside of the loop
+    def check_solution_validity(self, solution):
+        """Validate solution to ensure no adjacent vertices share the same color."""
+        for vertex1 in range(self.n):
+            for vertex2 in range(vertex1 + 1, self.n):
+                if self.graph[vertex1][vertex2] == 1 and solution[vertex1] == solution[vertex2]:
+                    return False
+        return True
     def restart(self):
         """Reset everything to start from scratch."""
         self.solve_button.config(state=tk.NORMAL)  # Enable solve button
         self.restart_button.config(state=tk.DISABLED)  # Disable restart button
         self.solution_label.config(text="")  # Reset solution message
         self.generation_label.config(text="Generation: 0")  # Reset generation label
-        self.canvas.delete("all")  # Clear the canvas
-        self.vertex_entry.delete(0, tk.END)  # Clear the vertex entry field
+        self.canvas.delete("all")  # Clear canvas
+
 
 # Run the app
 root = tk.Tk()

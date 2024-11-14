@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b6706e59-a4b8-40d2-8413-25b3861306a8" name="Changes" comment="Graph solver updated">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GraphColor.py" beforeDir="false" afterPath="$PROJECT_DIR$/GraphColor.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -23,13 +24,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/aswin/OneDrive/Desktop/Masters/Second Sem/UTPB-COSC-6389-Project1"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/aswin/OneDrive/Desktop/Masters/Second Sem/UTPB-COSC-6389-Project1&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\aswin\OneDrive\Desktop\Masters\Second Sem\UTPB-COSC-6389-Project1" />
@@ -167,7 +168,6 @@
         <item itemvalue="Python.GraphColor" />
         <item itemvalue="Python.Knapsack (1)" />
         <item itemvalue="Python.TravelingSalesman" />
-        <item itemvalue="Python.Knapsack1" />
         <item itemvalue="Python.Knapsack" />
       </list>
     </recent_temporary>
@@ -258,7 +258,21 @@
       <option name="project" value="LOCAL" />
       <updated>1731545330925</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Graph solver updated">
+      <created>1731545722265</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1731545722265</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Graph solver updated">
+      <created>1731545811392</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1731545811392</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
