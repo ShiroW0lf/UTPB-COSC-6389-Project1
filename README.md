@@ -38,13 +38,26 @@ This program applies a genetic algorithm to solve the Graph Coloring Problem, wh
 (Note: Adjacent Vertices are connect by a dashed line. The line should be red if the adjacent vertices are same color, showing conflict
 )
 
-**Algorithm Details and Contributions**  
-- **Initialization**: Begins with a randomly generated population with color assignments for all vertices.
-- **Fitness Evaluation**: Measures fitness based on the number of edge conflicts, with a goal to minimize conflicts.
-- **Selection**: Selects the top half of individuals based on fitness to ensure the best solutions progress.
-- **Crossover**: Uses a multi-point crossover for diverse trait mixing, helping the algorithm to escape local optima.
-- **Adaptive Mutation**: Implements a probabilistic mutation that adapts over generations, shifting from exploration to refinement as the algorithm progresses.
-- **Termination and Real-Time Feedback**: Terminates early if a solution with zero conflicts is found, providing visual feedback and generation tracking.
+# Algorithm Details and Contributions
+
+- **Initialization**:  
+  The algorithm begins with a randomly generated population of chromosomes, where each chromosome represents a possible color assignment for all vertices. The number of colors is determined by the total number of vertices in the graph.
+
+- **Fitness Evaluation**:  
+  Fitness is evaluated based on the number of edge conflicts, where adjacent vertices having the same color incur a penalty. The algorithm aims to minimize these conflicts, with the goal of achieving a solution where no two adjacent vertices share the same color (fitness = 0).
+
+- **Selection**:  
+  **Roulette Wheel Selection** is used to probabilistically select individuals from the population based on their fitness. Individuals with fewer conflicts (lower fitness values) have a higher chance of being selected, ensuring that better solutions are more likely to be carried forward in the next generation.
+
+- **Crossover**:  
+  The algorithm uses **two-point crossover** to combine the genetic material of two parent chromosomes. This technique facilitates the exchange of color assignments between parents at two random points, increasing diversity and helping the algorithm avoid getting stuck in local optima.
+
+- **Targeted Mutation**:  
+  The algorithm applies **targeted mutation**, which focuses on modifying specific chromosomes that are less fit. Rather than applying a random mutation across the entire chromosome, the algorithm selects vertices and swaps their colors with a probability that adapts over generations. Early generations use higher mutation rates to encourage exploration of diverse solutions, while later generations lower the mutation rate to refine and exploit promising colorings.
+
+- **Termination and Real-Time Feedback**:  
+  The algorithm terminates early if a solution with zero conflicts is found, providing real-time feedback on progress. The generation counter is updated continuously to track the evolution of the population. If no solution is found after 200 generations, the algorithm outputs the best solution discovered.
+
 
 ## UI Navigation
 
