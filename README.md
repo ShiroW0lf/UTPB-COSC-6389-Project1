@@ -20,17 +20,25 @@ The TSP seeks the shortest possible route that visits a list of cities and retur
 
 ### Knapsack Problem
 
-**Description**  
-The Knapsack Problem involves selecting items with given weights and values to maximize the total value without exceeding a weight limit. This project utilizes genetic algorithms with several enhancements for optimal performance.
+## Features & Enhancements
 
-**Enhancements and Contributions**  
-- **Fitness Function**: Changed from an absolute difference from the target value to a scaled normalization, reducing bias and improving consistency in the search.
-- **Selection Method**: Transitioned from weighted to tournament selection to promote diversity and prevent convergence to local optima.
-- **Crossover Method**: Updated from single-point crossover to uniform crossover, increasing genetic diversity and improving trait mixing.
-- **Mutation Method**: Enhanced with multi-point mutation for broader search exploration and effective local minima escape.
-- **Elitism**: Modified from simple to selective elitism, balancing best-solution retention with population diversity.
-- **UI Updates**: Replaced standard updates with asynchronous updates using `self.after()`, making the interface smoother and more responsive.
+### 1. **Fitness Function Enhancement**
+   - The fitness function has been upgraded from an absolute difference from the target value to a **scaled normalization**. This adjustment reduces bias and ensures more consistent performance throughout the search process, improving convergence towards the optimal solution.
 
+### 2. **Selection Method: Tournament Selection**
+   - The selection method has been updated from a weighted selection approach to **tournament selection**. Tournament selection promotes diversity in the population and prevents premature convergence to local optima, helping the algorithm explore a broader range of possible solutions.
+
+### 3. **Crossover Method: Uniform Crossover**
+   - The crossover method has been changed from a **single-point crossover** to **uniform crossover**, which increases genetic diversity by allowing more flexible combinations of genes between parent solutions. This ensures a better mix of traits and fosters more exploration of the solution space.
+
+### 4. **Mutation Method: Multi-point Mutation**
+   - The mutation method has been enhanced with **multi-point mutation**. This technique introduces random changes at multiple points in the genome, enabling the algorithm to escape local minima and explore a larger portion of the search space, leading to more robust solutions.
+
+### 5. **Elitism: Selective Elitism**
+   - The elitism strategy has been modified from simple elitism (retaining the best solutions) to **selective elitism**, where only the top individuals are carried over to the next generation. This approach strikes a balance between preserving high-quality solutions and maintaining population diversity.
+
+### 6. **UI Updates: Asynchronous Updates**
+   - The user interface has been optimized to use **asynchronous updates** with `self.after()`. This provides smoother, more responsive UI interactions by preventing blocking during the GA process, allowing real-time updates of the best solutions and generation progress without freezing the interface.
 ### Graph Coloring Problem
 
 **Description**  
