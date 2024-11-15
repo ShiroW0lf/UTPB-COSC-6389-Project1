@@ -7,17 +7,21 @@ import numpy as np
 
 # Constants
 num_items = 100
-frac_target = 0.7
-min_value = 128
-max_value = 2048
+frac_target = 0.75
+min_value = 100
+max_value = 2500
+
 screen_padding = 25
 item_padding = 5
 stroke_width = 5
-num_generations = 1000
-pop_size = 50
-elitism_count = 2
-mutation_rate = 0.1
-sleep_time = 0.1
+
+num_generations = 2000
+pop_size = 100
+elitism_count = 5
+mutation_rate = 0.05
+
+sleep_time = 0.05
+
 
 def random_rgb_color():
     red = random.randint(0x10, 0xff)
